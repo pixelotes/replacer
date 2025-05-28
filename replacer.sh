@@ -127,7 +127,7 @@ echo # Newline for readability
 echo "--- Replacement Report ---"
 if [ "$total_files_changed" -gt 0 ]; then
     # Sort the report by filepath for consistent output
-    sorted_files=($(for k in "${!changed_files_report[@]}"; do echo $k; done | sort))
+    mapfile -t sorted_files < <(for k in "${!changed_files_report[@]}"; do echo "$k"; done | sort)
 
     for file_path in "${sorted_files[@]}"; do
         occurrences=${changed_files_report["$file_path"]}
