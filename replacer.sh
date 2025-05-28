@@ -65,7 +65,6 @@ echo "---------------------------------------"
 echo # Newline for readability
 
 # Prepare for reporting
-declare -A changed_files_report # Associative array to store filename and count
 total_files_changed=0
 total_occurrences_replaced=0
 
@@ -84,7 +83,6 @@ while IFS= read -r -d $'\0' file_path; do
             if sed "$sed_command" "$file_path" > "$tmp_file" 2>/dev/null; then
                 if ! cmp -s "$tmp_file" "$file_path"; then
                     if mv "$tmp_file" "$file_path"; then
-                        changed_files_report["$file_path"]=$occurrences
                         total_files_changed=$((total_files_changed + 1))
                         total_occurrences_replaced=$((total_occurrences_replaced + occurrences))
                         echo "  -> Modified: $occurrences occurrence(s) replaced."
