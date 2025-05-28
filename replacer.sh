@@ -109,9 +109,6 @@ done < <(find "$TARGET_DIRECTORY" -type f -print0)
 echo # Newline for readability
 echo "--- Replacement Report ---"
 if [ "$total_files_changed" -gt 0 ]; then
-    # Sort the report by filepath for consistent output
-    mapfile -t sorted_files < <(for k in "${!changed_files_report[@]}"; do echo "$k"; done | sort)
-
     echo "--------------------------"
     echo "Total files changed: $total_files_changed"
     echo "Total occurrences replaced: $total_occurrences_replaced"
