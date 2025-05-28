@@ -16,16 +16,16 @@ A Bash script that recursively searches for files within a specified directory, 
 
 * A Bash shell (version 4.0+ recommended for associative arrays).
 * Standard Unix/Linux command-line utilities:
-* `find`
-* `grep`
-* `sed`
-* `wc`
-* `file`
-* `cmp`
-* `mv`
-* `mktemp`
-* `sort`
-* `printf`
+  * `find`
+  * `grep`
+  * `sed`
+  * `wc`
+  * `file`
+  * `cmp`
+  * `mv`
+  * `mktemp`
+  * `sort`
+  * `printf`
 
 These are typically available on most Linux distributions and macOS.
 
