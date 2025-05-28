@@ -6,12 +6,12 @@
 display_help() {
     echo "Recursively finds and replaces text in files within a specified directory."
     echo ""
-    echo "Usage: $0 <directory> <text_to_find> <text_to_replace_with>"
+    echo "Usage: $0 <text_to_find> <text_to_replace_with> <directory>"
     echo ""
     echo "Arguments:"
-    echo "  <directory>              The path to the directory to search within."
     echo "  <text_to_find>         The text string to be replaced (case-sensitive)."
     echo "  <text_to_replace_with> The text string to replace occurrences with."
+    echo "  <directory>              The path to the directory to search within."
     echo ""
     echo "Options:"
     echo "  --help, -h               Display this help message and exit."
@@ -39,9 +39,9 @@ if [ "$#" -ne 3 ]; then
     exit 1
 fi
 
-TARGET_DIRECTORY="$1"
-OLD_TEXT="$2"
-NEW_TEXT="$3"
+OLD_TEXT="$1"
+NEW_TEXT="$2"
+TARGET_DIRECTORY="$3"
 
 # Validate directory
 if [ ! -d "$TARGET_DIRECTORY" ]; then
