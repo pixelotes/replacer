@@ -71,33 +71,18 @@ total_occurrences_replaced=0
 
 # Use find to locate all regular files in the target directory and its subdirectories
 # -print0 and read -r -d $'\0' handle filenames with spaces or special characters.
-find "$TARGET_DIRECTORY" -type f -print0 | while IFS= read -r -d $'\0' file_path; do
-    # Check if the file is a text file (simple check, might need refinement for binary files)
-    # and if it contains the OLD_TEXT (case-sensitive)
+# Use a process substitution to avoid subshell, so variable changes persist
+while IFS= read -r -d $'\0' file_path; do
     if file "$file_path" | grep -q text; then
-        # Count occurrences of OLD_TEXT before replacement
-        # grep -o: prints only the matched (non-empty) parts of a matching line,
-        #          with each such part on a separate output line.
-        # wc -l: counts the number of lines, which corresponds to occurrences.
-        # Using grep -F to treat OLD_TEXT as a fixed string, not a regex
-        # Using -- to ensure OLD_TEXT isn't misinterpreted if it starts with -
         occurrences=$(grep -oF -- "$OLD_TEXT" "$file_path" 2>/dev/null | wc -l)
-
         if [ "$occurrences" -gt 0 ]; then
             echo "Processing: $file_path"
-            # Perform the replacement using sed.
-            # Escape OLD_TEXT and NEW_TEXT for sed.
-            # This handles /, &, and other special characters in the search/replace strings.
             escaped_old_text=$(printf '%s\n' "$OLD_TEXT" | sed 's:[][\\/.^$*&]:\\&:g')
             escaped_new_text=$(printf '%s\n' "$NEW_TEXT" | sed 's:[][\\/.^$*&]:\\&:g')
             sed_command="s|$escaped_old_text|$escaped_new_text|g"
-
-            # Create a temporary file for sed output
             tmp_file=$(mktemp)
             if sed "$sed_command" "$file_path" > "$tmp_file" 2>/dev/null; then
-                # Verify if actual changes were made by comparing temp file with original
                 if ! cmp -s "$tmp_file" "$file_path"; then
-                    # Move the temporary file to the original file path
                     if mv "$tmp_file" "$file_path"; then
                         changed_files_report["$file_path"]=$occurrences
                         total_files_changed=$((total_files_changed + 1))
@@ -105,23 +90,21 @@ find "$TARGET_DIRECTORY" -type f -print0 | while IFS= read -r -d $'\0' file_path
                         echo "  -> Modified: $occurrences occurrence(s) replaced."
                     else
                         echo "  -> Error: Failed to move temporary file to '$file_path'."
-                        rm -f "$tmp_file" # Clean up temp file on error
+                        rm -f "$tmp_file"
                     fi
                 else
                     echo "  -> No actual change needed (content would be identical)."
-                    rm -f "$tmp_file" # Clean up temp file
+                    rm -f "$tmp_file"
                 fi
             else
                 echo "  -> Error: sed command failed for '$file_path'. Check for special characters or permissions."
-                rm -f "$tmp_file" # Clean up temp file on error
+                rm -f "$tmp_file"
             fi
         fi
     else
-        # Silently skipping binary or non-text files unless verbose mode is added
-        # echo "Skipping binary or non-text file: $file_path"
-        : # No-op, placeholder for potential future logging
+        :
     fi
-done
+done < <(find "$TARGET_DIRECTORY" -type f -print0)
 
 echo # Newline for readability
 echo "--- Replacement Report ---"
@@ -129,16 +112,13 @@ if [ "$total_files_changed" -gt 0 ]; then
     # Sort the report by filepath for consistent output
     mapfile -t sorted_files < <(for k in "${!changed_files_report[@]}"; do echo "$k"; done | sort)
 
-    for file_path in "${sorted_files[@]}"; do
-        occurrences=${changed_files_report["$file_path"]}
-        echo "- File: $file_path"
-        echo "  Occurrences replaced: $occurrences"
-    done
     echo "--------------------------"
     echo "Total files changed: $total_files_changed"
     echo "Total occurrences replaced: $total_occurrences_replaced"
 else
+    echo "--------------------------"
     echo "No files were found containing the specified text, or no files needed changes."
 fi
 echo "--------------------------"
 echo "Script finished."
+
