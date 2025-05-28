@@ -24,8 +24,7 @@ A Bash script that recursively searches for files within a specified directory, 
 * `cmp`
 * `mv`
 * `mktemp`
-
-`sort`
+* `sort`
 * `printf`
 
 These are typically available on most Linux distributions and macOS.
@@ -85,5 +84,4 @@ Contributions, bug reports, and feature requests are welcome! Please feel free t
 
 ## License
 
-This project is open source. You can consider licensing it under the [MIT License](LICENSE.txt) or another open-source license of your choice.
-(If you choose to add a license, create a `LICENSE.txt` file with the license text.)
+This project is published under the [MIT License](LICENSE).
