@@ -45,7 +45,8 @@ chmod +x replacer.sh
 
 ### Arguments
 
-* `<text_to_find>: The exact text string you want to search for and replace\. This is case\-sensitive\. If the string contains spaces, enclose it in quotes\. \* \<text_to_replace_with>: The text string that will replace all occurrences of \<text_to_find>`. If the string contains spaces, enclose it in quotes.
+* `<text_to_find>`: The exact text string you want to search for and replace. This is case-sensitive. If the string contains spaces, enclose it in quotes.
+* `<text_to_replace_with>`: The text string that will replace all occurrences of <text_to_find>`. If the string contains spaces, enclose it in quotes.
 * `<directory>`: The path to the root directory where the script will start its recursive search.
 
 ### Options
