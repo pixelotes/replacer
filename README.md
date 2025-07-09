@@ -85,7 +85,7 @@ To preview changes with line highlighting:
 
 **This script modifies files directly (in-place). There is no undo feature.**
 
-**ALWAYS BACK UP YOUR FILES BEFORE RUNNING THIS SCRIPT.** Test on a sample directory to verify behavior first.
+**ALWAYS BACK UP YOUR FILES BEFORE RUNNING THIS SCRIPT.** Test with dry run and debug flags first to check the results beforehand.
 
 ## How It Works
 
