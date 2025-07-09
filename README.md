@@ -7,15 +7,22 @@ A Bash script that recursively searches for files within a specified directory, 
 * **Recursive Search**: Traverses all subdirectories.
 * **In-Place Replacement**: Modifies files directly.
 * **Occurrence Reporting**: Reports the number of replacements per file and a total summary.
-* **Handles Special Characters**: Attempts to correctly handle special characters in search and replacement strings for `sed`.
+* **Handles Special Characters**: Escapes search and replacement strings safely for use with `sed`.
 * **Handles Filenames with Spaces**: Uses `find ... -print0` and `read -d $'\0'` for robust filename handling.
-* **Text File Focus**: Attempts to process only text files using the `file` command and `grep text`.
+* **Text File Detection**: Uses `file --mime-type` to ensure only text files are processed.
+* **Dry-Run Mode**: Preview the changes without modifying any files (`--dry-run`).
+* **Backup Option**: Creates `.bak` backups of modified files (`--backup`).
+* **Extension Filtering**: Restrict changes to files with specific extensions (`--ext=txt,md`).
+* **Case-Insensitive Matching**: Replace text ignoring case (`--ignore-case`).
+* **Debug Mode**: Shows matched lines with reverse-video highlighting (`--debug`).
+* **Logging Support**: Outputs to a log file (`--log=path`).
 * **Help Option**: Provides a detailed help message with `--help` or `-h`.
 
 ## Prerequisites
 
-* A Bash shell (version 4.0+ recommended for associative arrays).
+* A Bash shell (version 4.0+ recommended).
 * Standard Unix/Linux command-line utilities:
+
   * `find`
   * `grep`
   * `sed`
@@ -24,8 +31,8 @@ A Bash script that recursively searches for files within a specified directory, 
   * `cmp`
   * `mv`
   * `mktemp`
-  * `sort`
   * `printf`
+  * `tee` (for logging)
 
 These are typically available on most Linux distributions and macOS.
 
@@ -33,6 +40,7 @@ These are typically available on most Linux distributions and macOS.
 
 1. Download the `replacer.sh` script.
 2. Make it executable:
+
 ```bash
 chmod +x replacer.sh
 ```
@@ -40,48 +48,65 @@ chmod +x replacer.sh
 ## Usage
 
 ```bash
-./replacer.sh <text_to_find> <text_to_replace_with> <directory>
+./replacer.sh [OPTIONS] <text_to_find> <text_to_replace_with> <directory>
 ```
 
 ### Arguments
 
-* `<text_to_find>`: The exact text string you want to search for and replace. This is case-sensitive. If the string contains spaces, enclose it in quotes.
-* `<text_to_replace_with>`: The text string that will replace all occurrences of <text_to_find>`. If the string contains spaces, enclose it in quotes.
+* `<text_to_find>`: The exact text string you want to search for and replace. Case-sensitive by default.
+* `<text_to_replace_with>`: The text string that will replace all occurrences of `<text_to_find>`.
 * `<directory>`: The path to the root directory where the script will start its recursive search.
 
 ### Options
 
-* `--help`, `-h`: Display the help message with detailed usage instructions and exit.
+* `--help`, `-h`: Display the help message and exit.
+* `--dry-run`: Preview changes without modifying files.
+* `--backup`: Save a `.bak` copy of each modified file.
+* `--ext=ext1,ext2`: Only process files with the given extensions.
+* `--ignore-case`: Match and replace text regardless of case.
+* `--log=FILE`: Write the script output to a log file.
+* `--debug`: Highlight matching lines in each file (implies `--dry-run`).
 
 ## Example
 
-To replace all occurrences of "Project Alpha" with "Project Omega" in all files within the `./project_files` directory and its subdirectories:
+To replace all occurrences of "Project Alpha" with "Project Omega" in all `.txt` and `.md` files within the `./project_files` directory:
 
 ```bash
-./replacer.sh "Project Alpha" "Project Omega" ./project_files
+./replacer.sh --ext=txt,md --backup "Project Alpha" "Project Omega" ./project_files
+```
+
+To preview changes with line highlighting:
+
+```bash
+./replacer.sh --debug --ignore-case "apiKey" "API_KEY" ./src
 ```
 
 ## 🚨 Important Warning 🚨
 
 **This script modifies files directly (in-place). There is no undo feature.**
 
-**ALWAYS BACKUP YOUR DIRECTORY AND FILES BEFORE RUNNING THIS SCRIPT, especially when working with important data.** Test the script on a sample directory first to ensure it behaves as expected.
+**ALWAYS BACK UP YOUR FILES BEFORE RUNNING THIS SCRIPT.** Test on a sample directory to verify behavior first.
 
 ## How It Works
 
-1. **Input Validation**: Checks for the correct number of arguments, if the search text is provided, and if the target directory exists.
-2. **File Discovery**: Uses `find` to locate all regular files within the specified directory hierarchy.
-3. **Text File Filtering**: For each found file, it uses the `file` command and `grep` to make a basic attempt to identify if it's a text file. Binary files are generally skipped.
-4. **Occurrence Counting**: If a file is deemed a text file, `grep -oF` is used to count the occurrences of `<text_to_find>` before any modification.
-5. **Safe Replacement**:
-* If occurrences are found, the script escapes special characters in the search and replacement strings to be safely used with `sed`.
-* `sed` performs the substitution, writing the output to a temporary file.
-* `cmp` compares the temporary file with the original. If they differ (meaning a change was made), the temporary file is moved to replace the original file. This approach is generally safer than `sed -i` directly, especially for cross-platform compatibility and atomicity.
-6. **Reporting**: The script keeps track of modified files and the number of replacements. After processing all files, it prints a summary report.
+1. **Input Validation**: Ensures proper arguments and existence of the target directory.
+2. **File Discovery**: Uses `find` to locate all regular files.
+3. **Text File Filtering**: Uses `file --mime-type` to ensure the file is of a textual format (e.g. `text/plain`, `application/json`).
+4. **Extension Filtering**: Optionally filters files based on extension.
+5. **Match Counting**: Uses `grep -oF` (or `-oiF`) to count matches before replacing.
+6. **Debug Preview**: In debug mode, prints matched lines with ANSI-highlighted matches.
+7. **Safe Replacement**:
+
+   * Escapes special characters in the search and replacement strings.
+   * Uses `sed` (with optional case-insensitive flag) to perform replacements.
+   * Writes changes to a temp file and compares it with the original.
+   * If different, it optionally backs up the original and replaces it.
+8. **Logging**: Optionally logs output to a file via `tee`.
+9. **Summary Reporting**: Displays total files changed and occurrences replaced.
 
 ## Contributing
 
-Contributions, bug reports, and feature requests are welcome! Please feel free to open an issue or submit a pull request.
+Contributions, bug reports, and feature requests are welcome! Please open an issue or submit a pull request.
 
 ## License
 
