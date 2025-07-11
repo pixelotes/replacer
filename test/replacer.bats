@@ -2,7 +2,7 @@
 
 setup() {
   TMPDIR=$(mktemp -d)
-  cp test-fixtures/original.txt "$TMPDIR/test.txt"
+  cp test/fixtures/original.txt "$TMPDIR/test.txt"
 }
 
 teardown() {
@@ -33,7 +33,7 @@ teardown() {
 
 @test "replacer finds 5 occurrences of 'dolorem' with ignore-case" {
     # Run the command with log output and ignore-case flag
-    run ./replacer.sh --dry-run --ignore-case --log="$TMPDIR/test_output.log" dolorem xxx test-fixtures/
+    run ./replacer.sh --dry-run --ignore-case --log="$TMPDIR/test_output.log" dolorem xxx test/fixtures/
     
     # Check that the command succeeded
     [ "$status" -eq 0 ]
@@ -75,7 +75,7 @@ teardown() {
 }
 
 @test "replacer stdout shows 5 occurrences of 'dolorem' with ignore-case" {
-    run ./replacer.sh --dry-run --ignore-case dolorem xxx test-fixtures/
+    run ./replacer.sh --dry-run --ignore-case dolorem xxx test/fixtures/
     
     # Check that the command succeeded
     [ "$status" -eq 0 ]
