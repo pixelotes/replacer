@@ -129,7 +129,11 @@ while IFS= read -r -d $'\0' file_path; do
                     debug_grep_opts="-nF"
                     $IGNORE_CASE && debug_grep_opts="-niF"
                     grep $debug_grep_opts -- "$OLD_TEXT" "$file_path" | while IFS=: read -r lineno line; do
-                        HIGHLIGHTED_LINE="${line//$OLD_TEXT/$'\e[7m'$OLD_TEXT$'\e[0m'}"
+                        if $IGNORE_CASE; then
+                            HIGHLIGHTED_LINE=$(echo "$line" | sed "s/$OLD_TEXT/\x1b[7m&\x1b[0m/gI")
+                        else
+                            HIGHLIGHTED_LINE="${line//$OLD_TEXT/$'\e[7m'$OLD_TEXT$'\e[0m'}"
+                        fi
                         printf "     Line %s: %b\n" "$lineno" "$HIGHLIGHTED_LINE"
                     done
                 fi
