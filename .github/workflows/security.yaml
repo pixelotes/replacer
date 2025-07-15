@@ -15,6 +15,7 @@ jobs:
         uses: pixelotes/git-commit-analyzer@release/v0.0.3
         with:
           model: 'qwen2.5-coder:1.5b'
+          start_date: '2025-07-14'
   
       # Optionally, you can upload the report as an artifact 
       - name: Upload security report artifact
