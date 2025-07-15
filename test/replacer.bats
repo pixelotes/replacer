@@ -2,7 +2,9 @@
 
 setup() {
   TMPDIR=$(mktemp -d)
-  cp -r test/fixtures/* "$TMPDIR/"
+  cp test/fixtures/original.txt "$TMPDIR/original.txt"
+  mkdir -p "$TMPDIR/1"
+  cp test/fixtures/1/a.txt "$TMPDIR/1/a.txt"
 }
 
 teardown() {
