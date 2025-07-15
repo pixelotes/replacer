@@ -16,6 +16,7 @@ display_help() {
     echo "  --help, -h             Display this help message and exit."
     echo "  --dry-run              Show what would be changed but make no actual changes."
     echo "  --backup               Create .bak backup of modified files."
+    echo "  --depth                Specifies the folder depth for modifying files."
     echo "  --ext=ext1,ext2        Restrict processing to files with specific extensions."
     echo "  --ignore-case          Perform case-insensitive matching."
     echo "  --log=FILE             Log output to the specified file."
@@ -33,6 +34,7 @@ BACKUP=false
 DEBUG=false
 EXT_FILTER=()
 LOG_FILE=""
+DEPTH=""
 
 # --- Parse Options ---
 POSITIONAL=()
@@ -44,6 +46,7 @@ for arg in "$@"; do
         --debug) DEBUG=true; DRY_RUN=true; shift ;;  # debug implies dry-run
         --ext=*) IFS=',' read -ra EXT_FILTER <<< "${arg#*=}"; shift ;;
         --log=*) LOG_FILE="${arg#*=}"; shift ;;
+        --depth=*) DEPTH="${arg#*=}"; shift ;;
         --help|-h) display_help ;;
         -*)
             echo "Unknown option: $arg"
@@ -75,6 +78,11 @@ if [ -z "$OLD_TEXT" ]; then
     exit 1
 fi
 
+if ! [[ "$DEPTH" =~ ^[0-9]+$ ]]; then
+     echo "Error: --depth requires a numeric value."
+     exit 1
+fi
+
 # --- Logging ---
 if [ -n "$LOG_FILE" ]; then
     exec > >(tee -a "$LOG_FILE") 2>&1
@@ -85,6 +93,7 @@ echo "--- Recursive Text Replacement Tool ---"
 echo "Directory:              $TARGET_DIRECTORY"
 echo "Text to find:           '$OLD_TEXT'"
 echo "Replacing with:         '$NEW_TEXT'"
+echo "Max search depth:       ${DEPTH:-(unlimited)}"
 echo "Dry run:                $DRY_RUN"
 echo "Case-insensitive:       $IGNORE_CASE"
 echo "Backup originals:       $BACKUP"
