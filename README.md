@@ -61,6 +61,7 @@ chmod +x replacer.sh
 
 * `--help`, `-h`: Display the help message and exit.
 * `--dry-run`: Preview changes without modifying files.
+* `--depth`: Specifies the folder depth for modifying files.
 * `--backup`: Save a `.bak` copy of each modified file.
 * `--ext=ext1,ext2`: Only process files with the given extensions.
 * `--ignore-case`: Match and replace text regardless of case.
@@ -72,13 +73,13 @@ chmod +x replacer.sh
 To replace all occurrences of "Project Alpha" with "Project Omega" in all `.txt` and `.md` files within the `./project_files` directory:
 
 ```bash
-./replacer.sh --ext=txt,md --backup "Project Alpha" "Project Omega" ./project_files
+./replacer.sh --ext=txt,md --backup --depth=3 "Project Alpha" "Project Omega" ./project_files
 ```
 
 To preview changes with line highlighting:
 
 ```bash
-./replacer.sh --debug --ignore-case "apiKey" "API_KEY" ./src
+./replacer.sh --dry-run --debug --ignore-case "apiKey" "API_KEY" ./src
 ```
 
 ## 🚨 Important Warning 🚨
