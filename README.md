@@ -21,20 +21,6 @@ A Bash script that recursively searches for files within a specified directory, 
 ## Prerequisites
 
 * A Bash shell (version 4.0+ recommended).
-* Standard Unix/Linux command-line utilities:
-
-  * `find`
-  * `grep`
-  * `sed`
-  * `wc`
-  * `file`
-  * `cmp`
-  * `mv`
-  * `mktemp`
-  * `printf`
-  * `tee` (for logging)
-
-These are typically available on most Linux distributions and macOS.
 
 ## Installation
 
