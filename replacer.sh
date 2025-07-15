@@ -78,7 +78,7 @@ if [ -z "$OLD_TEXT" ]; then
     exit 1
 fi
 
-if ! [[ "$DEPTH" =~ ^[0-9]+$ ]]; then
+if [[ -n "$DEPTH" && ! "$DEPTH" =~ ^[0-9]+$ ]]; then
      echo "Error: --depth requires a numeric value."
      exit 1
 fi
