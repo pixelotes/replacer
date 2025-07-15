@@ -98,4 +98,3 @@ Contributions, bug reports, and feature requests are welcome! Please open an iss
 ## License
 
 This project is published under the [MIT License](LICENSE).
-
