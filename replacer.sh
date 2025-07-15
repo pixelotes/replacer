@@ -182,7 +182,7 @@ while IFS= read -r -d $'\0' file_path; do
             ;;
         *) continue ;;
     esac
-done < <(find "$TARGET_DIRECTORY" -type f -print0)
+done < <(find "$TARGET_DIRECTORY" ${DEPTH:+-maxdepth "$DEPTH"} -type f -print0)
 
 # --- Summary Report ---
 echo
