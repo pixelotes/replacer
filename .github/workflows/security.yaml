@@ -1,0 +1,24 @@
+name: Git Commit Security Analysis
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  analyze-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Run Git Commit Security Analyzer
+        uses: pixelotes/git-commit-analyzer@release/v0.0.3
+        with:
+          model: 'qwen2.5-coder:1.5b'
+  
+      # Optionally, you can upload the report as an artifact 
+      - name: Upload security report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: security-report.json

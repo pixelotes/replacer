@@ -51,6 +51,7 @@ chmod +x replacer.sh
 * `--backup`: Save a `.bak` copy of each modified file.
 * `--ext=ext1,ext2`: Only process files with the given extensions.
 * `--ignore-case`: Match and replace text regardless of case.
+* `--ignore-binaries`: Ignores binary files.
 * `--log=FILE`: Write the script output to a log file.
 * `--debug`: Highlight matching lines in each file (implies `--dry-run`).
 
@@ -59,7 +60,7 @@ chmod +x replacer.sh
 To replace all occurrences of "Project Alpha" with "Project Omega" in all `.txt` and `.md` files within the `./project_files` directory:
 
 ```bash
-./replacer.sh --ext=txt,md --backup --depth=3 "Project Alpha" "Project Omega" ./project_files
+./replacer.sh --ext=txt,md --backup --ignore-binaries --depth=3 "Project Alpha" "Project Omega" ./project_files
 ```
 
 To preview changes with line highlighting:
@@ -73,23 +74,6 @@ To preview changes with line highlighting:
 **This script modifies files directly (in-place). There is no undo feature.**
 
 **ALWAYS BACK UP YOUR FILES BEFORE RUNNING THIS SCRIPT.** Test with dry run and debug flags first to check the results beforehand.
-
-## How It Works
-
-1. **Input Validation**: Ensures proper arguments and existence of the target directory.
-2. **File Discovery**: Uses `find` to locate all regular files.
-3. **Text File Filtering**: Uses `file --mime-type` to ensure the file is of a textual format (e.g. `text/plain`, `application/json`).
-4. **Extension Filtering**: Optionally filters files based on extension.
-5. **Match Counting**: Uses `grep -oF` (or `-oiF`) to count matches before replacing.
-6. **Debug Preview**: In debug mode, prints matched lines with ANSI-highlighted matches.
-7. **Safe Replacement**:
-
-   * Escapes special characters in the search and replacement strings.
-   * Uses `sed` (with optional case-insensitive flag) to perform replacements.
-   * Writes changes to a temp file and compares it with the original.
-   * If different, it optionally backs up the original and replaces it.
-8. **Logging**: Optionally logs output to a file via `tee`.
-9. **Summary Reporting**: Displays total files changed and occurrences replaced.
 
 ## Contributing
 
