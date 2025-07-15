@@ -14,11 +14,6 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
-      - name: Run git log
-        run: |
-          cd $GITHUB_WORKSPACE
-          git log --oneline -n 10
-
       - name: Run Git Commit Security Analyzer
         uses: pixelotes/git-commit-analyzer@release/v0.0.3
         with:
