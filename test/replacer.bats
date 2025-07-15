@@ -2,7 +2,7 @@
 
 setup() {
   TMPDIR=$(mktemp -d)
-  cp -r test/fixtures/ "$TMPDIR/"
+  cp -r test/fixtures/* "$TMPDIR/"
 }
 
 teardown() {
