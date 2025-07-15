@@ -2,9 +2,7 @@
 
 setup() {
   TMPDIR=$(mktemp -d)
-  cp test/fixtures/original.txt "$TMPDIR/original.txt"
-  mkdir -p "$TMPDIR/1"
-  cp test/fixtures/1/a.txt "$TMPDIR/1/a.txt"
+  cp -r test/fixtures/* "$TMPDIR/"
 }
 
 teardown() {
@@ -59,7 +57,25 @@ teardown() {
     grep -q "No files were modified" $TMPDIR/test_output.log
 }
 
+@test "replacer shows no files modified when depth is 1" {
+    run ./replacer.sh --dry-run --depth=1 --log="$TMPDIR/test_output.log" neon xxx "$TMPDIR"
+    
+    # Check that the command succeeded
+    [ "$status" -eq 0 ]
 
+    # Check the output contains "No files were modified"
+    grep -q "No files were modified" $TMPDIR/test_output.log
+}
+
+@test "replacer shows 3 occurence(s) when depth is 2" {
+    run ./replacer.sh --dry-run --depth=2 --log="$TMPDIR/test_output.log" neon xxx "$TMPDIR"
+    
+    # Check that the command succeeded
+    [ "$status" -eq 0 ]
+    
+    # Check the output contains "No files were modified"
+    grep -q "3 occurrence(s)" $TMPDIR/test_output.log
+}
 
 ##################
 # OUTPUT TO STDOUT
@@ -111,12 +127,12 @@ teardown() {
     
     # Check that the command succeeded
     [ "$status" -eq 0 ]
-    
     # Check the output contains "No files were modified"
+    
     [[ "$output" =~ "No files were modified" ]]
 }
 
-@test "replacer stdout shows "3 occurence(s)" when depth is 2" {
+@test "replacer stdout shows 3 occurence(s) when depth is 2" {
     run ./replacer.sh --dry-run --depth=2 neon xxx "$TMPDIR"
     
     # Check that the command succeeded
