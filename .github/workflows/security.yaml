@@ -7,18 +7,35 @@ on:
 jobs:
   analyze-commits:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       - name: Run Git Commit Security Analyzer
-        uses: pixelotes/git-commit-analyzer@release/v0.0.3
+        uses: pixelotes/git-commit-analyzer@release/v0.0.4
         with:
-          model: 'qwen2.5-coder:1.5b'
+          model: 'qwen2.5-coder:3b'
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
   
-      # Optionally, you can upload the report as an artifact 
+      # Upload the report as an artifact for archival
       - name: Upload security report artifact
         uses: actions/upload-artifact@v4
         with:
           name: security-report
           path: security-report.json
+
+      # Upload the latest report to the repository
+      - name: Commit generated report
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add security-report.json
+          git commit -m "Report generated automatically" || echo "Nothing to commit"
+          git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
