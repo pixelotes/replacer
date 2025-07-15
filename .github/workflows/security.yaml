@@ -15,9 +15,10 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Run Git Commit Security Analyzer
-        uses: pixelotes/git-commit-analyzer@release/v0.0.3
+        uses: pixelotes/git-commit-analyzer@feat/gha-webhook-support
         with:
           model: 'qwen2.5-coder:1.5b'
+          slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
   
       # Optionally, you can upload the report as an artifact 
       - name: Upload security report artifact
