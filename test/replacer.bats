@@ -2,12 +2,16 @@
 
 setup() {
   TMPDIR=$(mktemp -d)
-  cp test/fixtures/original.txt "$TMPDIR/test.txt"
+  cp -r test/fixtures/ "$TMPDIR/"
 }
 
 teardown() {
   rm -rf "$TMPDIR"
 }
+
+###############
+# OUTPUT TO LOG
+###############
 
 @test "replacer finds 3 occurrences of 'lumin'" {
     # Run the command with log output
@@ -53,6 +57,12 @@ teardown() {
     grep -q "No files were modified" $TMPDIR/test_output.log
 }
 
+
+
+##################
+# OUTPUT TO STDOUT
+##################
+
 # Alternative tests that check stdout directly (if --log doesn't work as expected)
 @test "replacer stdout shows 3 occurrences of 'lumin'" {
     run ./replacer.sh --dry-run lumin xxx "$TMPDIR"
@@ -92,4 +102,24 @@ teardown() {
     
     # Check the output contains "No files were modified"
     [[ "$output" =~ "No files were modified" ]]
+}
+
+@test "replacer stdout shows no files modified when depth is 1" {
+    run ./replacer.sh --dry-run --depth=1 neon xxx "$TMPDIR"
+    
+    # Check that the command succeeded
+    [ "$status" -eq 0 ]
+    
+    # Check the output contains "No files were modified"
+    [[ "$output" =~ "No files were modified" ]]
+}
+
+@test "replacer stdout shows "3 occurence(s)" when depth is 2" {
+    run ./replacer.sh --dry-run --depth=2 neon xxx "$TMPDIR"
+    
+    # Check that the command succeeded
+    [ "$status" -eq 0 ]
+    
+    # Check the output contains "No files were modified"
+    [[ "$output" =~ "3 occurrence(s)" ]]
 }
