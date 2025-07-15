@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.head_ref }}
 
       - name: Run Git Commit Security Analyzer
         uses: pixelotes/git-commit-analyzer@release/v0.0.3
