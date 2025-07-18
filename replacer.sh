@@ -19,6 +19,7 @@ display_help() {
     echo "  --depth                Specifies the folder depth for modifying files."
     echo "  --ext=ext1,ext2        Restrict processing to files with specific extensions."
     echo "  --ignore-case          Perform case-insensitive matching."
+    echo "  --ignore-binaries      Detects and ignores binary files."
     echo "  --log=FILE             Log output to the specified file."
     echo "  --debug                Show matching lines with highlighting (implies dry-run)."
     echo ""
@@ -32,6 +33,7 @@ DRY_RUN=false
 IGNORE_CASE=false
 BACKUP=false
 DEBUG=false
+IGNORE_BINARY=false
 EXT_FILTER=()
 LOG_FILE=""
 DEPTH=""
@@ -42,6 +44,7 @@ for arg in "$@"; do
     case $arg in
         --dry-run) DRY_RUN=true; shift ;;
         --ignore-case) IGNORE_CASE=true; shift ;;
+        --ignore-binaries) IGNORE_BINARY=true; shift;;
         --backup) BACKUP=true; shift ;;
         --debug) DEBUG=true; DRY_RUN=true; shift ;;  # debug implies dry-run
         --ext=*) IFS=',' read -ra EXT_FILTER <<< "${arg#*=}"; shift ;;
@@ -98,6 +101,7 @@ echo "Dry run:                $DRY_RUN"
 echo "Case-insensitive:       $IGNORE_CASE"
 echo "Backup originals:       $BACKUP"
 echo "Extension filter:       ${EXT_FILTER[*]:-(none)}"
+echo "Ignore binaries:        $IGNORE_BINARY"
 echo "Debug mode:             $DEBUG"
 echo "---------------------------------------"
 echo
@@ -107,8 +111,11 @@ total_occurrences_replaced=0
 
 # --- Main File Loop ---
 while IFS= read -r -d $'\0' file_path; do
+
     # --- Text File Check via MIME ---
     mime_type=$(file --mime-type -b "$file_path")
+    is_binary=$(file "$file_path" | grep -qE 'binary' && echo true || echo false)
+
     case "$mime_type" in
         text/*|application/json|application/xml|application/javascript)
             # --- Extension Filtering ---
@@ -122,6 +129,11 @@ while IFS= read -r -d $'\0' file_path; do
                     fi
                 done
                 [ "$match" == false ] && continue
+            fi
+
+            # --- Binary file exclusion ---
+            if $IGNORE_BINARY && [ "$is_binary" = true ]; then
+                continue
             fi
 
             # --- Count Matches ---
