@@ -15,7 +15,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Run Git Commit Security Analyzer
-        uses: pixelotes/git-commit-analyzer@feat/gha-webhook-support
+        uses: pixelotes/git-commit-analyzer@release/v0.0.4
         with:
           model: 'qwen2.5-coder:3b'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
@@ -35,3 +35,5 @@ jobs:
           git add security-report.json
           git commit -m "Report generated automatically" || echo "Nothing to commit"
           git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
