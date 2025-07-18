@@ -19,7 +19,7 @@ jobs:
       - name: Run Git Commit Security Analyzer
         uses: pixelotes/git-commit-analyzer@release/v0.0.4
         with:
-          model: 'qwen2.5-coder:3b'
+          model: 'qwen2.5-coder:7b'
           slack_webhook: ${{ secrets.SLACK_WEBHOOK }}
   
       # Upload the report as an artifact for archival
